@@ -3,18 +3,25 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
-app.get("/", (req, res) => {
-  res.send("API da Lider Motorcycles rodando!");
-});
 
+// Verificação da variável de ambiente para MongoDB
+const mongoURI = process.env.MONGO_URI;
+if (!mongoURI) {
+  console.error('A variável de ambiente MONGO_URI não foi definida!');
+  process.exit(1); // Encerra o servidor se a variável de ambiente não estiver definida
+}
 
 // Conexão com MongoDB Atlas
-const mongoURI = 'mongodb+srv://ider_stock:4WfR21tTHMlBfVK1@liderstockcluster.ehd2ofv.mongodb.net/lider_stock?retryWrites=true&w=majority&appName=LiderStockCluster';
-mongoose.connect(mongoURI)
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('🟢 Conectado ao MongoDB Atlas!'))
-  .catch((err) => console.error('Erro ao conectar ao MongoDB:', err));
+  .catch((err) => {
+    console.error('Erro ao conectar ao MongoDB:', err);
+    process.exit(1);  // Encerra o servidor caso a conexão falhe
+  });
 
 // Modelos
 const Produto = mongoose.model('Produto', {
@@ -78,63 +85,114 @@ app.get('/produtos', async (req, res) => {
       res.json(todos);
     }
   } catch (erro) {
-    res.status(500).json({ erro: 'Erro ao buscar produtos' });
+    console.error('Erro ao buscar produtos:', erro);
+    res.status(500).json({ erro: 'Erro ao buscar produtos', detalhes: erro.message });
   }
 });
 
 app.post('/produtos', async (req, res) => {
-  const novoProduto = new Produto(req.body);
-  await novoProduto.save();
-  res.json(novoProduto);
+  try {
+    const novoProduto = new Produto(req.body);
+    await novoProduto.save();
+    res.json(novoProduto);
+  } catch (erro) {
+    console.error('Erro ao salvar produto:', erro);
+    res.status(500).json({ erro: 'Erro ao salvar produto', detalhes: erro.message });
+  }
 });
 
 app.put('/produtos/:id', async (req, res) => {
-  const atualizado = await Produto.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  res.json(atualizado);
+  try {
+    const atualizado = await Produto.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(atualizado);
+  } catch (erro) {
+    console.error('Erro ao atualizar produto:', erro);
+    res.status(500).json({ erro: 'Erro ao atualizar produto', detalhes: erro.message });
+  }
 });
 
 app.delete('/produtos/:id', async (req, res) => {
-  await Produto.findByIdAndDelete(req.params.id);
-  res.json({ mensagem: 'Produto deletado com sucesso.' });
+  try {
+    await Produto.findByIdAndDelete(req.params.id);
+    res.json({ mensagem: 'Produto deletado com sucesso.' });
+  } catch (erro) {
+    console.error('Erro ao deletar produto:', erro);
+    res.status(500).json({ erro: 'Erro ao deletar produto', detalhes: erro.message });
+  }
 });
 
 // CLIENTES
 app.post('/clientes', async (req, res) => {
-  const novoCliente = new Cliente(req.body);
-  await novoCliente.save();
-  res.json(novoCliente);
+  try {
+    const novoCliente = new Cliente(req.body);
+    await novoCliente.save();
+    res.json(novoCliente);
+  } catch (erro) {
+    console.error('Erro ao salvar cliente:', erro);
+    res.status(500).json({ erro: 'Erro ao salvar cliente', detalhes: erro.message });
+  }
 });
 
 app.get('/clientes', async (req, res) => {
-  const clientes = await Cliente.find();
-  res.json(clientes);
+  try {
+    const clientes = await Cliente.find();
+    res.json(clientes);
+  } catch (erro) {
+    console.error('Erro ao buscar clientes:', erro);
+    res.status(500).json({ erro: 'Erro ao buscar clientes', detalhes: erro.message });
+  }
 });
 
 app.put('/clientes/:id', async (req, res) => {
-  const atualizado = await Cliente.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  res.json(atualizado);
+  try {
+    const atualizado = await Cliente.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(atualizado);
+  } catch (erro) {
+    console.error('Erro ao atualizar cliente:', erro);
+    res.status(500).json({ erro: 'Erro ao atualizar cliente', detalhes: erro.message });
+  }
 });
 
 app.delete('/clientes/:id', async (req, res) => {
-  await Cliente.findByIdAndDelete(req.params.id);
-  res.json({ mensagem: 'Cliente deletado com sucesso.' });
+  try {
+    await Cliente.findByIdAndDelete(req.params.id);
+    res.json({ mensagem: 'Cliente deletado com sucesso.' });
+  } catch (erro) {
+    console.error('Erro ao deletar cliente:', erro);
+    res.status(500).json({ erro: 'Erro ao deletar cliente', detalhes: erro.message });
+  }
 });
 
 // ORÇAMENTOS
 app.get('/orcamentos', async (req, res) => {
-  const orcamentos = await Orcamento.find();
-  res.json(orcamentos);
+  try {
+    const orcamentos = await Orcamento.find();
+    res.json(orcamentos);
+  } catch (erro) {
+    console.error('Erro ao buscar orçamentos:', erro);
+    res.status(500).json({ erro: 'Erro ao buscar orçamentos', detalhes: erro.message });
+  }
 });
 
 app.post('/orcamentos', async (req, res) => {
-  const novo = new Orcamento(req.body);
-  await novo.save();
-  res.json(novo);
+  try {
+    const novo = new Orcamento(req.body);
+    await novo.save();
+    res.json(novo);
+  } catch (erro) {
+    console.error('Erro ao salvar orçamento:', erro);
+    res.status(500).json({ erro: 'Erro ao salvar orçamento', detalhes: erro.message });
+  }
 });
 
 app.delete('/orcamentos/:id', async (req, res) => {
-  await Orcamento.findByIdAndDelete(req.params.id);
-  res.json({ mensagem: 'Orçamento removido com sucesso.' });
+  try {
+    await Orcamento.findByIdAndDelete(req.params.id);
+    res.json({ mensagem: 'Orçamento removido com sucesso.' });
+  } catch (erro) {
+    console.error('Erro ao remover orçamento:', erro);
+    res.status(500).json({ erro: 'Erro ao remover orçamento', detalhes: erro.message });
+  }
 });
 
 // SERVIÇOS
@@ -152,24 +210,40 @@ app.get('/servicos', async (req, res) => {
       res.json(todos);
     }
   } catch (err) {
-    res.status(500).json({ erro: 'Erro ao buscar serviços' });
+    console.error('Erro ao buscar serviços:', err);
+    res.status(500).json({ erro: 'Erro ao buscar serviços', detalhes: err.message });
   }
 });
 
 app.post('/servicos', async (req, res) => {
-  const novo = new Servico(req.body);
-  await novo.save();
-  res.json(novo);
+  try {
+    const novo = new Servico(req.body);
+    await novo.save();
+    res.json(novo);
+  } catch (erro) {
+    console.error('Erro ao salvar serviço:', erro);
+    res.status(500).json({ erro: 'Erro ao salvar serviço', detalhes: erro.message });
+  }
 });
 
 app.put('/servicos/:id', async (req, res) => {
-  const atualizado = await Servico.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  res.json(atualizado);
+  try {
+    const atualizado = await Servico.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(atualizado);
+  } catch (erro) {
+    console.error('Erro ao atualizar serviço:', erro);
+    res.status(500).json({ erro: 'Erro ao atualizar serviço', detalhes: erro.message });
+  }
 });
 
 app.delete('/servicos/:id', async (req, res) => {
-  await Servico.findByIdAndDelete(req.params.id);
-  res.json({ mensagem: 'Serviço deletado com sucesso.' });
+  try {
+    await Servico.findByIdAndDelete(req.params.id);
+    res.json({ mensagem: 'Serviço deletado com sucesso.' });
+  } catch (erro) {
+    console.error('Erro ao deletar serviço:', erro);
+    res.status(500).json({ erro: 'Erro ao deletar serviço', detalhes: erro.message });
+  }
 });
 
 // GASTOS
@@ -179,7 +253,8 @@ app.post('/gastos', async (req, res) => {
     await novo.save();
     res.json(novo);
   } catch (err) {
-    res.status(500).json({ erro: 'Erro ao salvar gasto' });
+    console.error('Erro ao salvar gasto:', err);
+    res.status(500).json({ erro: 'Erro ao salvar gasto', detalhes: err.message });
   }
 });
 
@@ -188,29 +263,27 @@ app.get('/gastos', async (req, res) => {
     const todos = await Gasto.find();
     res.json(todos);
   } catch (err) {
-    res.status(500).json({ erro: 'Erro ao buscar gastos' });
+    console.error('Erro ao buscar gastos:', err);
+    res.status(500).json({ erro: 'Erro ao buscar gastos', detalhes: err.message });
   }
 });
 
-// PAGAMENTOS - com redução automática do estoque
+// PAGAMENTOS
 app.post('/pagamentos', async (req, res) => {
   try {
     const dados = req.body;
 
-    // 1. Criar pagamento completo com itens
-    const novoPagamento = new Pagamento({
-      ...dados,
-      data: new Date(),
-    });
+    // Criar pagamento
+    const novoPagamento = new Pagamento({ ...dados, data: new Date() });
     await novoPagamento.save();
 
-    // 2. Reduzir estoque dos produtos comprados
+    // Reduzir estoque dos produtos
     if (Array.isArray(dados.itens)) {
       for (const item of dados.itens) {
         if (item.tipo === 'produto' && item.id) {
           const produto = await Produto.findById(item.id);
           if (produto) {
-            produto.quantidade = produto.quantidade - (item.quantidade || 1);
+            produto.quantidade -= (item.quantidade || 1);
             await produto.save();
           }
         }
@@ -220,7 +293,7 @@ app.post('/pagamentos', async (req, res) => {
     res.status(201).json(novoPagamento);
   } catch (err) {
     console.error('Erro ao salvar pagamento:', err);
-    res.status(500).json({ erro: 'Erro ao salvar pagamento' });
+    res.status(500).json({ erro: 'Erro ao salvar pagamento', detalhes: err.message });
   }
 });
 
@@ -229,9 +302,18 @@ app.get('/pagamentos', async (req, res) => {
     const lista = await Pagamento.find();
     res.json(lista);
   } catch (err) {
-    res.status(500).json({ erro: 'Erro ao buscar pagamentos' });
+    console.error('Erro ao buscar pagamentos:', err);
+    res.status(500).json({ erro: 'Erro ao buscar pagamentos', detalhes: err.message });
   }
 });
+
+// Middleware de erro global
+app.use((err, req, res, next) => {
+  console.error('Erro interno do servidor:', err);
+  res.status(500).json({ erro: 'Erro interno do servidor', detalhes: err.message });
+});
+
+// Configuração da porta
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
