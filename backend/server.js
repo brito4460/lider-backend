@@ -5,6 +5,10 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.get("/", (req, res) => {
+  res.send("API da Lider Motorcycles rodando!");
+});
+
 
 // Conexão com MongoDB Atlas
 const mongoURI = 'mongodb+srv://ider_stock:4WfR21tTHMlBfVK1@liderstockcluster.ehd2ofv.mongodb.net/lider_stock?retryWrites=true&w=majority&appName=LiderStockCluster';
@@ -228,8 +232,8 @@ app.get('/pagamentos', async (req, res) => {
     res.status(500).json({ erro: 'Erro ao buscar pagamentos' });
   }
 });
+const PORT = process.env.PORT || 3001;
 
-// INICIAR SERVIDOR
-app.listen(3001, () => {
-  console.log('🚀 Servidor rodando em http://localhost:3001');
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });
