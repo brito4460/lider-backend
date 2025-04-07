@@ -1,33 +1,25 @@
-// src/App.jsx
-import React, { useMemo, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import {
-  ThemeProvider,
-  createTheme,
-  CssBaseline,
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Box,
-} from '@mui/material';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { ThemeProvider, createTheme, CssBaseline, Box, AppBar, Toolbar, Typography, IconButton, Button } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import '@fontsource/orbitron/600.css'; // peso médio
 
-
-import Sidebar from './components/Sidebar';
-import Home from './pages/Home';
-import Estoque from './pages/Estoque';
-import Clientes from './pages/Clientes';
-import Pagamento from './pages/Pagamento';
+import PrivateRoute from './components/PrivateRoute';  // Verifique se o PrivateRoute está correto
+import Sidebar from './components/Sidebar';  // Sidebar fixo
+import Estoque from './pages/Estoque';      // Página de Estoque
+import Pagamento from './pages/Pagamento';  // Página de Pagamento
+import Relatorio from './pages/Relatorio';  // Página de Relatório
+import Login from './pages/Login';          // Página de Login
 import Orcamento from './pages/Orcamento';
-import Relatorio from './pages/Relatorio';
-import Servicos from './pages/Servicos';
 import Gastos from './pages/Gastos';
+import Servicos from './pages/Servicos';
+import Clientes from './pages/Clientes';
+import MotosAlugadas from './pages/MotosAlugadas';
 
 function App() {
   const [modoEscuro, setModoEscuro] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
   const theme = useMemo(
     () =>
@@ -41,42 +33,67 @@ function App() {
     [modoEscuro]
   );
 
+  // Handle Login
+  const handleLogin = () => {
+    localStorage.setItem('auth', 'true');
+    setIsAuthenticated(true);
+    navigate('/estoque'); // Redireciona para Estoque após o login
+  };
+
+  // Handle Logout
+  const handleLogout = () => {
+    localStorage.removeItem('auth');
+    setIsAuthenticated(false);
+    navigate('/login');
+  };
+
+  // Verifica o status de autenticação ao carregar
+  useEffect(() => {
+    const authStatus = localStorage.getItem('auth');
+    setIsAuthenticated(authStatus === 'true');
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <Box sx={{ display: 'flex' }}>
-          <Sidebar />
-          <Box component="main" sx={{ flexGrow: 1 }}>
-            <AppBar position="static" color="primary">
-              <Toolbar>
-                <Typography
-                  variant="h6"
-                  component="div"
-                  sx={{ flexGrow: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
-                >
-                  Lider Motorcycles
-                </Typography>
-                <IconButton color="inherit" onClick={() => setModoEscuro(!modoEscuro)}>
-                  {modoEscuro ? <Brightness7Icon /> : <Brightness4Icon />}
-                </IconButton>
-              </Toolbar>
-            </AppBar>
+      <Box sx={{ display: 'flex' }}>
+        {isAuthenticated && <Sidebar />} {/* Sidebar sempre presente */}
 
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/estoque" element={<Estoque />} />
-              <Route path="/clientes" element={<Clientes />} />
-              <Route path="/orcamento" element={<Orcamento />} />
-              <Route path="/relatorio" element={<Relatorio />} />
-              <Route path="/servicos" element={<Servicos />} />
-              <Route path="/gastos" element={<Gastos />} />
-              <Route path="/pagamento" element={<Pagamento/>} />
-              
-            </Routes>
-          </Box>
+        <Box component="main" sx={{ flexGrow: 1, padding: 2 }}>
+          <AppBar position="static" color="primary">
+            <Toolbar>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                Lider Motorcycles
+              </Typography>
+              <IconButton color="inherit" onClick={() => setModoEscuro(!modoEscuro)}>
+                {modoEscuro ? <Brightness7Icon /> : <Brightness4Icon />}
+              </IconButton>
+              {isAuthenticated && (
+                <Button color="inherit" onClick={handleLogout}>LOGOUT</Button>
+              )}
+            </Toolbar>
+          </AppBar>
+
+          <Routes>
+            {/* Rota do login */}
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+
+            {/* Página inicial */}
+            <Route path="/" element={<PrivateRoute element={<Estoque />} />} />
+
+            {/* Outras páginas privadas */}
+            <Route path="/estoque" element={<PrivateRoute element={<Estoque />} />} />
+            <Route path="/pagamento" element={<PrivateRoute element={<Pagamento />} />} />
+            <Route path="/relatorio" element={<PrivateRoute element={<Relatorio />} />} />
+            <Route path="/orcamento" element={<PrivateRoute element={<Orcamento />} />} />
+            <Route path="/servicos" element={<PrivateRoute element={<Servicos />} />} />
+            <Route path="/gastos" element={<PrivateRoute element={<Gastos />} />} />
+            <Route path="/clientes" element={<PrivateRoute element={<Clientes />} />} />
+            <Route path="/motos-alugadas" element={<PrivateRoute element={<MotosAlugadas />} />} />
+
+          </Routes>
         </Box>
-      </Router>
+      </Box>
     </ThemeProvider>
   );
 }

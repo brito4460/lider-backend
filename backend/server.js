@@ -61,6 +61,15 @@ const Pagamento = mongoose.model('Pagamento', {
   itens: Array, // Salva todos os itens da venda (produtos e serviços)
 });
 
+const Aluguel = mongoose.model('Aluguel', {
+  cliente: String,
+  moto: String,
+  retirada: Date,
+  devolucao: Date,
+  valor: Number,
+  observacoes: String
+});
+
 // ROTAS ====================================================
 
 // PRODUTOS
@@ -232,6 +241,53 @@ app.get('/pagamentos', async (req, res) => {
     res.status(500).json({ erro: 'Erro ao buscar pagamentos' });
   }
 });
+
+// MOTOS ALUGADAS
+app.get('/alugueis', async (req, res) => {
+  const { cliente, moto, data } = req.query;
+  const filtro = {};
+
+  if (cliente) filtro.cliente = new RegExp(cliente, 'i');
+  if (moto) filtro.moto = new RegExp(moto, 'i');
+  if (data) filtro.retirada = { $gte: new Date(data) };
+
+  try {
+    const alugueis = await Aluguel.find(filtro).sort({ createdAt: -1 });
+    res.json(alugueis);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao buscar aluguéis' });
+  }
+});
+
+app.post('/alugueis', async (req, res) => {
+  try {
+    const novo = new Aluguel(req.body);
+    await novo.save();
+    res.json(novo);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao salvar aluguel' });
+  }
+});
+
+app.put('/alugueis/:id', async (req, res) => {
+  try {
+    const atualizado = await Aluguel.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(atualizado);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao atualizar aluguel' });
+  }
+});
+
+app.delete('/alugueis/:id', async (req, res) => {
+  try {
+    await Aluguel.findByIdAndDelete(req.params.id);
+    res.json({ mensagem: 'Aluguel deletado com sucesso.' });
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao excluir aluguel' });
+  }
+});
+
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);

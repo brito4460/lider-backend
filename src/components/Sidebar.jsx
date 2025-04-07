@@ -1,67 +1,54 @@
-// src/components/Sidebar.jsx
 import React from 'react';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar } from '@mui/material';
+import { List, ListItemButton, ListItemText, Drawer } from '@mui/material';
 import { Link } from 'react-router-dom';
-import HomeIcon from '@mui/icons-material/Home';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import PeopleIcon from '@mui/icons-material/People';
-import ReceiptIcon from '@mui/icons-material/Receipt';
-import BuildIcon from '@mui/icons-material/Build';
-import PaymentIcon from '@mui/icons-material/Payment';
-import AssessmentIcon from '@mui/icons-material/Assessment';
-
-const drawerWidth = 240;
 
 const Sidebar = () => {
   return (
     <Drawer
-      variant="permanent"
       sx={{
-        width: drawerWidth,
+        width: 240,
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+        '& .MuiDrawer-paper': {
+          width: 240,
+          boxSizing: 'border-box',
+        },
       }}
+      variant="permanent"
+      anchor="left"
     >
-      <Toolbar />
       <List>
-        <ListItem button component={Link} to="/">
-          <ListItemIcon><HomeIcon /></ListItemIcon>
-          <ListItemText primary="Início" />
-        </ListItem>
-
-        <ListItem button component={Link} to="/estoque">
-          <ListItemIcon><InventoryIcon /></ListItemIcon>
+        <ListItemButton component={Link} to="/estoque">
           <ListItemText primary="Estoque" />
-        </ListItem>
+        </ListItemButton>
 
-        <ListItem button component={Link} to="/clientes">
-          <ListItemIcon><PeopleIcon /></ListItemIcon>
-          <ListItemText primary="Clientes" />
-        </ListItem>
-
-        <ListItem button component={Link} to="/orcamento">
-          <ListItemIcon><ReceiptIcon /></ListItemIcon>
-          <ListItemText primary="Orçamento" />
-        </ListItem>
-
-        <ListItem button component={Link} to="/servicos">
-          <ListItemIcon><BuildIcon /></ListItemIcon>
-          <ListItemText primary="Serviços" />
-        </ListItem>
-
-        <ListItem button component={Link} to="/pagamento">
-          <ListItemIcon><PaymentIcon /></ListItemIcon>
+        <ListItemButton component={Link} to="/pagamento">
           <ListItemText primary="Pagamento" />
-        </ListItem>
+        </ListItemButton>
 
-        <ListItem button component={Link} to="/relatorio">
-          <ListItemIcon><AssessmentIcon /></ListItemIcon>
+        <ListItemButton component={Link} to="/relatorio">
           <ListItemText primary="Relatório" />
-        </ListItem>
-        <ListItem button component={Link} to="/gastos">
-          <ListItemIcon><AssessmentIcon /></ListItemIcon>
+        </ListItemButton>
+
+        <ListItemButton component={Link} to="/gastos">
           <ListItemText primary="Gastos" />
-        </ListItem>
+        </ListItemButton>
+
+        <ListItemButton component={Link} to="/clientes">
+          <ListItemText primary="Clientes" />
+        </ListItemButton>
+
+        <ListItemButton component={Link} to="/servicos">
+          <ListItemText primary="Serviços" />
+        </ListItemButton>
+
+        <ListItemButton component={Link} to="/orcamento">
+          <ListItemText primary="Orçamento" />
+        </ListItemButton>
+
+        <ListItemButton component={Link} to="/motos-alugadas">
+          <ListItemText primary="Motos Alugadas" />
+        </ListItemButton>
+
       </List>
     </Drawer>
   );
