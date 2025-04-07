@@ -127,7 +127,7 @@ const Gastos = () => {
           <Card>
             <CardContent>
               <Typography variant="subtitle2">Total Geral de Gastos</Typography>
-              <Typography variant="h6">R$ {totalGeral.toFixed(2)}</Typography>
+              <Typography variant="h6">£{totalGeral.toFixed(2)}</Typography>
               <Button sx={{ mt: 1 }} onClick={exportarCSV}>Exportar CSV</Button>
             </CardContent>
           </Card>
@@ -174,7 +174,7 @@ const Gastos = () => {
                 <TableRow key={g._id}>
                   <TableCell>{g.categoria}</TableCell>
                   <TableCell>{g.descricao}</TableCell>
-                  <TableCell>R$ {g.valor.toFixed(2)}</TableCell>
+                  <TableCell>£{g.valor.toFixed(2)}</TableCell>
                   <TableCell>{g.data}</TableCell>
                 </TableRow>
               ))}

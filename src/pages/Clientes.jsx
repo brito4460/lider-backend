@@ -24,7 +24,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
-  const [novoCliente, setNovoCliente] = useState({ nome: '', telefone: '', placa: '', modelo: '', observacoes: '' });
+  const [novoCliente, setNovoCliente] = useState({ nome: '', telefone: '', placa: '', modelo: '', observacoes: '', saldoDevedor: 0 });
   const [busca, setBusca] = useState('');
   const [clienteEditando, setClienteEditando] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -48,7 +48,7 @@ const Clientes = () => {
       });
       const clienteAdicionado = await resposta.json();
       setClientes((prev) => [...prev, clienteAdicionado]);
-      setNovoCliente({ nome: '', telefone: '', placa: '', modelo: '', observacoes: '' });
+      setNovoCliente({ nome: '', telefone: '', placa: '', modelo: '', observacoes: '', saldoDevedor: 0 });
     } catch (erro) {
       console.error('Erro ao cadastrar cliente:', erro);
     }
@@ -111,6 +111,7 @@ const Clientes = () => {
           <TextField label="Placa da Moto" value={novoCliente.placa} onChange={(e) => setNovoCliente({ ...novoCliente, placa: e.target.value })} />
           <TextField label="Modelo da Moto" value={novoCliente.modelo} onChange={(e) => setNovoCliente({ ...novoCliente, modelo: e.target.value })} />
           <TextField label="Observações" value={novoCliente.observacoes} onChange={(e) => setNovoCliente({ ...novoCliente, observacoes: e.target.value })} />
+          <TextField label="Saldo Devedor (£)" type="number" value={novoCliente.saldoDevedor} onChange={(e) => setNovoCliente({ ...novoCliente, saldoDevedor: Number(e.target.value) })} />
           <Button variant="contained" onClick={adicionarCliente}>Cadastrar Cliente</Button>
         </Stack>
       </Paper>
@@ -140,6 +141,7 @@ const Clientes = () => {
                   <TableCell>Placa</TableCell>
                   <TableCell>Modelo</TableCell>
                   <TableCell>Observações</TableCell>
+                  <TableCell>Saldo Devedor (£)</TableCell>
                   <TableCell align="center">Ações</TableCell>
                 </TableRow>
               </TableHead>
@@ -151,6 +153,7 @@ const Clientes = () => {
                     <TableCell>{cliente.placa}</TableCell>
                     <TableCell>{cliente.modelo}</TableCell>
                     <TableCell>{cliente.observacoes}</TableCell>
+                    <TableCell>{cliente.saldoDevedor?.toFixed(2) || '0.00'}</TableCell>
                     <TableCell align="center">
                       <IconButton onClick={() => abrirEdicao(cliente)}><EditIcon /></IconButton>
                       <IconButton onClick={() => deletarCliente(cliente._id)}><DeleteIcon /></IconButton>
@@ -172,6 +175,7 @@ const Clientes = () => {
             <TextField label="Placa da Moto" value={clienteEditando?.placa || ''} onChange={(e) => setClienteEditando({ ...clienteEditando, placa: e.target.value })} />
             <TextField label="Modelo da Moto" value={clienteEditando?.modelo || ''} onChange={(e) => setClienteEditando({ ...clienteEditando, modelo: e.target.value })} />
             <TextField label="Observações" value={clienteEditando?.observacoes || ''} onChange={(e) => setClienteEditando({ ...clienteEditando, observacoes: e.target.value })} />
+            <TextField label="Saldo Devedor (£)" type="number" value={clienteEditando?.saldoDevedor || 0} onChange={(e) => setClienteEditando({ ...clienteEditando, saldoDevedor: Number(e.target.value) })} />
           </Stack>
         </DialogContent>
         <DialogActions>

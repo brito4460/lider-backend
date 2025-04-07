@@ -1,51 +1,37 @@
+// src/pages/MotosAlugadas.jsx
 import React, { useState, useEffect } from 'react';
 import {
   TextField, Button, Box, Typography, Paper, Table, TableBody,
-  TableCell, TableContainer, TableHead, TableRow, IconButton
+  TableCell, TableContainer, TableHead, TableRow, IconButton, Dialog,
+  DialogActions, DialogContent, DialogTitle
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
 import axios from 'axios';
 
-const FormularioAluguel = () => {
-  const [formData, setFormData] = useState({
-    cliente: '',
-    moto: '',
-    retirada: '',
-    devolucao: '',
-    valor: '',
-    observacoes: '',
-  });
-
-  const [alugueis, setAlugueis] = useState([]);
+const MotosAlugadas = () => {
+  const [formData, setFormData] = useState({ placa: '', modelo: '' });
+  const [motos, setMotos] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
-  const [filtro, setFiltro] = useState({ cliente: '', moto: '', data: '' });
+  const [alugarDialogOpen, setAlugarDialogOpen] = useState(false);
+  const [motoSelecionada, setMotoSelecionada] = useState(null);
+  const [aluguelData, setAluguelData] = useState({ cliente: '', telefone: '' });
 
-  const API = 'http://localhost:3001/alugueis';
+  const API = 'http://localhost:3001/motos';
 
-  // Carregar aluguéis do backend
-  const carregarAlugueis = async () => {
-    const params = {};
-    if (filtro.cliente) params.cliente = filtro.cliente;
-    if (filtro.moto) params.moto = filtro.moto;
-    if (filtro.data) params.data = filtro.data;
-
-    const res = await axios.get(API, { params });
-    setAlugueis(res.data);
+  const carregarMotos = async () => {
+    const res = await axios.get(API);
+    setMotos(res.data);
   };
 
   useEffect(() => {
-    carregarAlugueis();
+    carregarMotos();
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleFiltroChange = (e) => {
-    const { name, value } = e.target;
-    setFiltro(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -54,104 +40,89 @@ const FormularioAluguel = () => {
       await axios.put(`${API}/${editandoId}`, formData);
       setEditandoId(null);
     } else {
-      await axios.post(API, formData);
+      await axios.post(API, { ...formData, estaAlugada: false, cliente: '', telefone: '' });
     }
-    setFormData({ cliente: '', moto: '', retirada: '', devolucao: '', valor: '', observacoes: '' });
-    carregarAlugueis();
+    setFormData({ placa: '', modelo: '' });
+    carregarMotos();
   };
 
-  const handleEditar = (aluguel) => {
-    setFormData(aluguel);
-    setEditandoId(aluguel._id);
+  const handleEditar = (moto) => {
+    setFormData(moto);
+    setEditandoId(moto._id);
   };
 
   const handleExcluir = async (id) => {
     await axios.delete(`${API}/${id}`);
-    carregarAlugueis();
+    carregarMotos();
   };
 
-  const aplicarFiltro = () => {
-    carregarAlugueis();
+  const abrirDialogAluguel = (moto) => {
+    setMotoSelecionada(moto);
+    setAluguelData({ cliente: '', telefone: '' });
+    setAlugarDialogOpen(true);
   };
 
-  const limparFiltro = () => {
-    setFiltro({ cliente: '', moto: '', data: '' });
-    carregarAlugueis();
+  const confirmarAluguel = async () => {
+    if (motoSelecionada) {
+      await axios.put(`${API}/${motoSelecionada._id}`, {
+        ...motoSelecionada,
+        estaAlugada: true,
+        cliente: aluguelData.cliente,
+        telefone: aluguelData.telefone
+      });
+      setAlugarDialogOpen(false);
+      setMotoSelecionada(null);
+      carregarMotos();
+    }
   };
 
   return (
-    <Box sx={{ maxWidth: 1000, margin: 'auto', mt: 4 }}>
+    <Box sx={{ maxWidth: 900, margin: 'auto', mt: 4 }}>
       <Paper sx={{ padding: 4, mb: 4 }}>
         <Typography variant="h6" gutterBottom>
-          {editandoId ? 'Editar Aluguel' : 'Alugar Moto'}
+          {editandoId ? 'Editar Moto' : 'Cadastrar Moto'}
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit}>
-          <TextField label="Cliente" name="cliente" value={formData.cliente}
-            onChange={handleChange} fullWidth margin="normal" required />
-
-          <TextField label="Moto (modelo ou placa)" name="moto" value={formData.moto}
-            onChange={handleChange} fullWidth margin="normal" required />
-
-          <TextField label="Retirada" name="retirada" type="date" value={formData.retirada}
-            onChange={handleChange} fullWidth margin="normal" InputLabelProps={{ shrink: true }} required />
-
-          <TextField label="Devolução" name="devolucao" type="date" value={formData.devolucao}
-            onChange={handleChange} fullWidth margin="normal" InputLabelProps={{ shrink: true }} required />
-
-          <TextField label="Valor" name="valor" type="number" value={formData.valor}
-            onChange={handleChange} fullWidth margin="normal" required />
-
-          <TextField label="Observações" name="observacoes" value={formData.observacoes}
-            onChange={handleChange} fullWidth margin="normal" multiline rows={2} />
+          <TextField label="Placa" name="placa" value={formData.placa} onChange={handleChange} fullWidth margin="normal" required />
+          <TextField label="Modelo" name="modelo" value={formData.modelo} onChange={handleChange} fullWidth margin="normal" required />
 
           <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
-            {editandoId ? 'Salvar Alterações' : 'Registrar Aluguel'}
+            {editandoId ? 'Salvar Alterações' : 'Cadastrar Moto'}
           </Button>
         </Box>
       </Paper>
 
-      <Paper sx={{ padding: 2, mb: 2 }}>
-        <Typography variant="h6">Filtrar Aluguéis</Typography>
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
-          <TextField label="Cliente" name="cliente" value={filtro.cliente} onChange={handleFiltroChange} />
-          <TextField label="Moto" name="moto" value={filtro.moto} onChange={handleFiltroChange} />
-          <TextField label="Data de Retirada" name="data" type="date"
-            value={filtro.data} onChange={handleFiltroChange} InputLabelProps={{ shrink: true }} />
-          <Button variant="outlined" onClick={aplicarFiltro}>Aplicar Filtro</Button>
-          <Button variant="text" onClick={limparFiltro}>Limpar</Button>
-        </Box>
-      </Paper>
-
-      <Typography variant="h6">Lista de Aluguéis</Typography>
-      {alugueis.length === 0 ? (
-        <Typography>Nenhum aluguel registrado.</Typography>
+      <Typography variant="h6">Motos Registradas</Typography>
+      {motos.length === 0 ? (
+        <Typography>Nenhuma moto cadastrada.</Typography>
       ) : (
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell>Placa</TableCell>
+                <TableCell>Modelo</TableCell>
+                <TableCell>Status</TableCell>
                 <TableCell>Cliente</TableCell>
-                <TableCell>Moto</TableCell>
-                <TableCell>Retirada</TableCell>
-                <TableCell>Devolução</TableCell>
-                <TableCell>Valor</TableCell>
-                <TableCell>Observações</TableCell>
+                <TableCell>Telefone</TableCell>
                 <TableCell>Ações</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {alugueis.map((a) => (
-                <TableRow key={a._id}>
-                  <TableCell>{a.cliente}</TableCell>
-                  <TableCell>{a.moto}</TableCell>
-                  <TableCell>{a.retirada?.slice(0, 10)}</TableCell>
-                  <TableCell>{a.devolucao?.slice(0, 10)}</TableCell>
-                  <TableCell>R$ {a.valor}</TableCell>
-                  <TableCell>{a.observacoes}</TableCell>
+              {motos.map((moto) => (
+                <TableRow key={moto._id}>
+                  <TableCell>{moto.placa}</TableCell>
+                  <TableCell>{moto.modelo}</TableCell>
+                  <TableCell>{moto.estaAlugada ? 'Alugada' : 'Disponível'}</TableCell>
+                  <TableCell>{moto.cliente}</TableCell>
+                  <TableCell>{moto.telefone}</TableCell>
                   <TableCell>
-                    <IconButton onClick={() => handleEditar(a)}><EditIcon /></IconButton>
-                    <IconButton onClick={() => handleExcluir(a._id)}><DeleteIcon /></IconButton>
+                    <IconButton onClick={() => handleEditar(moto)}><EditIcon /></IconButton>
+                    <IconButton onClick={() => handleExcluir(moto._id)}><DeleteIcon /></IconButton>
+                    {!moto.estaAlugada && (
+                      <IconButton onClick={() => abrirDialogAluguel(moto)}><DirectionsBikeIcon /></IconButton>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -159,8 +130,34 @@ const FormularioAluguel = () => {
           </Table>
         </TableContainer>
       )}
+
+      <Dialog open={alugarDialogOpen} onClose={() => setAlugarDialogOpen(false)}>
+        <DialogTitle>Alugar Moto</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Nome do Cliente"
+            name="cliente"
+            value={aluguelData.cliente}
+            onChange={(e) => setAluguelData({ ...aluguelData, cliente: e.target.value })}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Telefone do Cliente"
+            name="telefone"
+            value={aluguelData.telefone}
+            onChange={(e) => setAluguelData({ ...aluguelData, telefone: e.target.value })}
+            fullWidth
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAlugarDialogOpen(false)}>Cancelar</Button>
+          <Button variant="contained" onClick={confirmarAluguel}>Confirmar Aluguel</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
 
-export default FormularioAluguel;
+export default MotosAlugadas;

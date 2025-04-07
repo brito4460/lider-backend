@@ -18,40 +18,37 @@ import {
   Button,
 } from '@mui/material';
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
   Legend,
-  BarChart,
-  Bar,
 } from 'recharts';
 import { saveAs } from 'file-saver';
-
-const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#00c49f', '#ffbb28'];
 
 const Relatorio = () => {
   const [orcamentos, setOrcamentos] = useState([]);
   const [gastos, setGastos] = useState([]);
+  const [pagamentos, setPagamentos] = useState([]);
   const [busca, setBusca] = useState('');
 
   const buscarDados = async () => {
     try {
-      const [resOrc, resGas] = await Promise.all([
+      const [resOrc, resGas, resPag] = await Promise.all([
         fetch('http://localhost:3001/orcamentos'),
         fetch('http://localhost:3001/gastos'),
+        fetch('http://localhost:3001/pagamentos'),
       ]);
-      const [dataOrc, dataGas] = await Promise.all([
+      const [dataOrc, dataGas, dataPag] = await Promise.all([
         resOrc.json(),
         resGas.json(),
+        resPag.json(),
       ]);
       setOrcamentos(dataOrc);
       setGastos(dataGas);
+      setPagamentos(dataPag);
     } catch (erro) {
       console.error('Erro ao buscar dados:', erro);
     }
@@ -68,6 +65,7 @@ const Relatorio = () => {
 
   const totalReceita = orcFiltrados.reduce((acc, item) => acc + item.valor, 0);
   const totalDespesa = gastos.reduce((acc, g) => acc + g.valor, 0);
+  const totalPagamentos = pagamentos.reduce((acc, p) => acc + p.valorTotal, 0);
   const lucroLiquido = totalReceita - totalDespesa;
 
   const agrupadoMensal = {};
@@ -107,21 +105,27 @@ const Relatorio = () => {
         <Grid item xs={12} sm={6} md={3}>
           <Card><CardContent>
             <Typography variant="subtitle2">Receita Total</Typography>
-            <Typography variant="h6">R$ {totalReceita.toFixed(2)}</Typography>
+            <Typography variant="h6">£{totalReceita.toFixed(2)}</Typography>
           </CardContent></Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <Card><CardContent>
             <Typography variant="subtitle2">Despesas Totais</Typography>
-            <Typography variant="h6">R$ {totalDespesa.toFixed(2)}</Typography>
+            <Typography variant="h6">£{totalDespesa.toFixed(2)}</Typography>
           </CardContent></Card>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <Card><CardContent>
             <Typography variant="subtitle2">Lucro Líquido</Typography>
             <Typography variant="h6" color={lucroLiquido >= 0 ? 'green' : 'error'}>
-              R$ {lucroLiquido.toFixed(2)}
+              £ {lucroLiquido.toFixed(2)}
             </Typography>
+          </CardContent></Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card><CardContent>
+            <Typography variant="subtitle2">Total em Pagamentos</Typography>
+            <Typography variant="h6">£{totalPagamentos.toFixed(2)}</Typography>
           </CardContent></Card>
         </Grid>
       </Grid>
@@ -156,7 +160,7 @@ const Relatorio = () => {
         </Grid>
       </Grid>
 
-      <Paper sx={{ p: 3 }}>
+      <Paper sx={{ p: 3, mb: 4 }}>
         <Typography variant="h6" gutterBottom>Resumo de Orçamentos</Typography>
         <TableContainer>
           <Table size="small">
@@ -172,7 +176,31 @@ const Relatorio = () => {
                 <TableRow key={item._id}>
                   <TableCell>{item.cliente}</TableCell>
                   <TableCell>{item.descricao}</TableCell>
-                  <TableCell>R$ {item.valor.toFixed(2)}</TableCell>
+                  <TableCell>£{item.valor.toFixed(2)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h6" gutterBottom>Pagamentos Recentes</Typography>
+        <TableContainer>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Forma</TableCell>
+                <TableCell>Valor</TableCell>
+                <TableCell>Data</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {pagamentos.slice(0, 10).map((p) => (
+                <TableRow key={p._id}>
+                  <TableCell>{p.formaPagamento}</TableCell>
+                  <TableCell>£{p.valorTotal.toFixed(2)}</TableCell>
+                  <TableCell>{new Date(p.data).toLocaleString()}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

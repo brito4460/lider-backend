@@ -89,7 +89,7 @@ const Servicos = () => {
         <Stack spacing={2} direction="row" sx={{ mt: 2, flexWrap: 'wrap' }}>
           <TextField label="Nome" value={novo.nome} onChange={(e) => setNovo({ ...novo, nome: e.target.value })} />
           <TextField label="Descrição" value={novo.descricao} onChange={(e) => setNovo({ ...novo, descricao: e.target.value })} sx={{ minWidth: 200 }} />
-          <TextField label="Valor (R$)" type="number" value={novo.valor} onChange={(e) => setNovo({ ...novo, valor: e.target.value })} />
+          <TextField label="Valor (£)" type="number" value={novo.valor} onChange={(e) => setNovo({ ...novo, valor: e.target.value })} />
           <Button variant="contained" onClick={salvar}>Salvar</Button>
         </Stack>
       </Paper>
@@ -120,7 +120,7 @@ const Servicos = () => {
                 <TableRow key={s._id}>
                   <TableCell>{s.nome}</TableCell>
                   <TableCell>{s.descricao}</TableCell>
-                  <TableCell>R$ {s.valor.toFixed(2)}</TableCell>
+                  <TableCell>£{s.valor.toFixed(2)}</TableCell>
                   <TableCell align="center">
                     <IconButton onClick={() => abrirEdicao(s)}><EditIcon /></IconButton>
                     <IconButton onClick={() => deletar(s._id)}><DeleteIcon /></IconButton>
@@ -147,7 +147,7 @@ const Servicos = () => {
               onChange={(e) => setServicoEditando({ ...servicoEditando, descricao: e.target.value })}
             />
             <TextField
-              label="Valor (R$)"
+              label="Valor (£)"
               type="number"
               value={servicoEditando?.valor || ''}
               onChange={(e) => setServicoEditando({ ...servicoEditando, valor: e.target.value })}

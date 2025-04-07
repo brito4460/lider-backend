@@ -129,7 +129,7 @@ const Orcamento = () => {
               {servicos.map((s) => (
                 <MenuItem key={s._id} value={s._id}>
                   <Checkbox checked={servicosSelecionados.includes(s._id)} />
-                  <ListItemText primary={`${s.nome} - R$ ${s.valor}`} />
+                  <ListItemText primary={`${s.nome} - £ ${s.valor}`} />
                 </MenuItem>
               ))}
             </Select>
@@ -137,7 +137,7 @@ const Orcamento = () => {
 
           <TextField label="Descrição" multiline value={novoOrcamento.descricao} onChange={(e) => setNovoOrcamento({ ...novoOrcamento, descricao: e.target.value })} />
 
-          <TextField label="Valor Total (R$)" type="number" value={valorManual} onChange={(e) => setValorManual(e.target.value)} />
+          <TextField label="Valor Total (£)" type="number" value={valorManual} onChange={(e) => setValorManual(e.target.value)} />
 
           <Button variant="contained" onClick={adicionarOrcamento}>Salvar Orçamento</Button>
         </Stack>
@@ -163,7 +163,7 @@ const Orcamento = () => {
                 <TableRow key={orc._id}>
                   <TableCell>{orc.cliente}</TableCell>
                   <TableCell>{orc.descricao}</TableCell>
-                  <TableCell>R$ {orc.valor.toFixed(2)}</TableCell>
+                  <TableCell>£{orc.valor.toFixed(2)}</TableCell>
                   <TableCell align="center">
                     <IconButton onClick={() => imprimirOrcamento(orc)}><PrintIcon /></IconButton>
                     <IconButton onClick={() => deletarOrcamento(orc._id)}><DeleteIcon /></IconButton>
@@ -181,7 +181,7 @@ const Orcamento = () => {
           <Typography variant="h4" gutterBottom>Orçamento - Lider Motorcycles</Typography>
           <Typography variant="subtitle1">Cliente: {orcamentoSelecionado.cliente}</Typography>
           <Typography variant="body1" sx={{ mt: 2 }}>Descrição: {orcamentoSelecionado.descricao}</Typography>
-          <Typography variant="h6" sx={{ mt: 2 }}>Total: R$ {orcamentoSelecionado.valor.toFixed(2)}</Typography>
+          <Typography variant="h6" sx={{ mt: 2 }}>Total:£{orcamentoSelecionado.valor.toFixed(2)}</Typography>
           <Typography sx={{ mt: 4, fontSize: 12 }}>*Este documento é apenas uma proposta de serviço. Válido por 7 dias.</Typography>
         </Box>
       )}
