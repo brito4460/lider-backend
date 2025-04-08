@@ -31,7 +31,7 @@ const Clientes = () => {
 
   const buscarClientes = async () => {
     try {
-      const resposta = await fetch('http://localhost:3001/clientes');
+      const resposta = await fetch('${process.env.REACT_APP_API_URL}/clientes');
       const dados = await resposta.json();
       setClientes(dados);
     } catch (erro) {
@@ -41,7 +41,7 @@ const Clientes = () => {
 
   const adicionarCliente = async () => {
     try {
-      const resposta = await fetch('http://localhost:3001/clientes', {
+      const resposta = await fetch('${process.env.REACT_APP_API_URL}/clientes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(novoCliente),
@@ -57,7 +57,7 @@ const Clientes = () => {
   const deletarCliente = async (id) => {
     if (!window.confirm('Deseja realmente excluir este cliente?')) return;
     try {
-      await fetch(`http://localhost:3001/clientes/${id}`, { method: 'DELETE' });
+      await fetch(`${process.env.REACT_APP_API_URL}/clientes/${id}`, { method: 'DELETE' });
       setClientes(clientes.filter((c) => c._id !== id));
     } catch (erro) {
       console.error('Erro ao deletar cliente:', erro);
@@ -71,7 +71,7 @@ const Clientes = () => {
 
   const salvarEdicao = async () => {
     try {
-      const resposta = await fetch(`http://localhost:3001/clientes/${clienteEditando._id}`, {
+      const resposta = await fetch(`${process.env.REACT_APP_API_URL}/clientes/${clienteEditando._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(clienteEditando),

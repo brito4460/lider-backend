@@ -17,7 +17,7 @@ const Estoque = () => {
 
   const buscarProdutos = async () => {
     try {
-      const resposta = await fetch('http://localhost:3001/produtos');
+      const resposta = await fetch('${process.env.REACT_APP_API_URL}/produtos');
       const dados = await resposta.json();
       setProdutos(dados);
     } catch (erro) {
@@ -29,7 +29,7 @@ const Estoque = () => {
 
   const adicionarProduto = async () => {
     try {
-      const resposta = await fetch('http://localhost:3001/produtos', {
+      const resposta = await fetch('${process.env.REACT_APP_API_URL}produtos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -52,7 +52,7 @@ const Estoque = () => {
   const salvarEdicao = async (id) => {
     const produtoEditado = produtos.find(p => p._id === id);
     try {
-      await fetch(`http://localhost:3001/produtos/${id}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/produtos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(produtoEditado),

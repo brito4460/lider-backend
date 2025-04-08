@@ -30,13 +30,13 @@ const Pagamento = () => {
   };
 
   const buscarServicos = async (texto) => {
-    const res = await fetch(`http://localhost:3001/servicos?nome=${texto}`);
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/servicos?nome=${texto}`);
     const data = await res.json();
     setServicosOpcoes(data);
   };
 
   const buscarPagamentos = async () => {
-    const res = await fetch('http://localhost:3001/pagamentos');
+    const res = await fetch('${process.env.REACT_APP_API_URL}/pagamentos');
     const data = await res.json();
     setPagamentosSalvos(data.reverse());
   };
@@ -134,7 +134,7 @@ const Pagamento = () => {
         data: new Date(),
       };
 
-      const res = await fetch('http://localhost:3001/pagamentos', {
+      const res = await fetch('${process.env.REACT_APP_API_URL}/pagamentos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
