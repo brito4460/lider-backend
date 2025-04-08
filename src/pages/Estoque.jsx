@@ -6,6 +6,8 @@ import {
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 
+const API_URL = import.meta.env.VITE_API_URL; // para Vite (altere se estiver usando CRA)
+
 const Estoque = () => {
   const [produtos, setProdutos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +19,8 @@ const Estoque = () => {
 
   const buscarProdutos = async () => {
     try {
-      const resposta = await fetch('${process.env.REACT_APP_API_URL}/produtos');
+      const resposta = await fetch(`${API_URL}/produtos`);
+      if (!resposta.ok) throw new Error("Erro ao buscar produtos");
       const dados = await resposta.json();
       setProdutos(dados);
     } catch (erro) {
@@ -29,7 +32,7 @@ const Estoque = () => {
 
   const adicionarProduto = async () => {
     try {
-      const resposta = await fetch('${process.env.REACT_APP_API_URL}produtos', {
+      const resposta = await fetch(`${API_URL}/produtos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -40,6 +43,8 @@ const Estoque = () => {
           codigo: novoProduto.codigo,
         }),
       });
+
+      if (!resposta.ok) throw new Error("Erro ao adicionar produto");
 
       const produtoAdicionado = await resposta.json();
       setProdutos((prev) => [...prev, produtoAdicionado]);
@@ -52,11 +57,12 @@ const Estoque = () => {
   const salvarEdicao = async (id) => {
     const produtoEditado = produtos.find(p => p._id === id);
     try {
-      await fetch(`${process.env.REACT_APP_API_URL}/produtos/${id}`, {
+      const resposta = await fetch(`${API_URL}/produtos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(produtoEditado),
       });
+      if (!resposta.ok) throw new Error("Erro ao salvar edição");
       alert('Alterações salvas!');
     } catch (erro) {
       console.error('Erro ao salvar edições:', erro);
@@ -86,7 +92,6 @@ const Estoque = () => {
     <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
       <Typography variant="h4" gutterBottom>Estoque de Produtos</Typography>
 
-      {/* ✅ 1. ADICIONAR PRODUTO - AGORA NO TOPO MESMO */}
       <Paper elevation={3} sx={{ p: 2, mb: 4 }}>
         <Typography variant="h6" gutterBottom>Adicionar Novo Produto</Typography>
         <Stack spacing={2} direction="row" sx={{ flexWrap: 'wrap' }}>
@@ -99,7 +104,6 @@ const Estoque = () => {
         </Stack>
       </Paper>
 
-      {/* ✅ 2. CAMPO DE BUSCA */}
       <TextField
         label="Buscar por nome, tipo ou código"
         fullWidth
@@ -108,7 +112,6 @@ const Estoque = () => {
         onChange={(e) => setBusca(e.target.value)}
       />
 
-      {/* ✅ 3. TABELA DE PRODUTOS */}
       <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
         {loading ? (
           <CircularProgress />
