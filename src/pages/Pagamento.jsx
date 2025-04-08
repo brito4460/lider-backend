@@ -24,7 +24,7 @@ const Pagamento = () => {
   const [valorManual, setValorManual] = useState('');
 
   const buscarProdutos = async (texto) => {
-    const res = await fetch(`http://localhost:3001/produtos?nome=${texto}`);
+    const res = await fetch(`${process.env.REACT_APP_API_URL}//produtos?nome=${texto}`);
     const data = await res.json();
     setProdutosOpcoes(data);
   };

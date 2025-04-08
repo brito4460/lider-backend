@@ -18,7 +18,7 @@ const MotosAlugadas = () => {
   const [motoSelecionada, setMotoSelecionada] = useState(null);
   const [aluguelData, setAluguelData] = useState({ cliente: '', telefone: '' });
 
-  const API = 'http://localhost:3001/motos';
+  const API = '${process.env.REACT_APP_API_URL/motos';
 
   const carregarMotos = async () => {
     const res = await axios.get(API);
