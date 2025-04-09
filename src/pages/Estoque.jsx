@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 
-const API_URL = import.meta.env.VITE_API_URL; // para Vite (altere se estiver usando CRA)
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Estoque = () => {
   const [produtos, setProdutos] = useState([]);
@@ -19,7 +19,7 @@ const Estoque = () => {
 
   const buscarProdutos = async () => {
     try {
-      const resposta = await fetch(`${import.meta.env.VITE_API_URL}/produtos`);
+      const resposta = await fetch(`${API_URL}/produtos`);
       if (!resposta.ok) throw new Error("Erro ao buscar produtos");
       const dados = await resposta.json();
       setProdutos(dados);
@@ -32,7 +32,7 @@ const Estoque = () => {
 
   const adicionarProduto = async () => {
     try {
-      const resposta = await fetch(`${import.meta.env.VITE_API_URL}/produtos`, {
+      const resposta = await fetch(`${API_URL}/produtos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -49,6 +49,11 @@ const Estoque = () => {
       const produtoAdicionado = await resposta.json();
       setProdutos((prev) => [...prev, produtoAdicionado]);
       setNovoProduto({ nome: '', tipo: '', quantidade: '', preco: '', codigo: '' });
+
+      // Foca novamente no campo de código após adicionar
+      setTimeout(() => {
+        document.getElementById('codigoInput')?.focus();
+      }, 100);
     } catch (erro) {
       console.error('Erro ao adicionar produto:', erro);
     }
@@ -57,7 +62,7 @@ const Estoque = () => {
   const salvarEdicao = async (id) => {
     const produtoEditado = produtos.find(p => p._id === id);
     try {
-      const resposta = await fetch(`${import.meta.env.VITE_API_URL}/produtos/${id}`, {
+      const resposta = await fetch(`${API_URL}/produtos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(produtoEditado),
@@ -92,14 +97,44 @@ const Estoque = () => {
     <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
       <Typography variant="h4" gutterBottom>Estoque de Produtos</Typography>
 
+      {/* ✅ Formulário com suporte a scanner */}
       <Paper elevation={3} sx={{ p: 2, mb: 4 }}>
         <Typography variant="h6" gutterBottom>Adicionar Novo Produto</Typography>
         <Stack spacing={2} direction="row" sx={{ flexWrap: 'wrap' }}>
-          <TextField label="Nome" value={novoProduto.nome} onChange={(e) => setNovoProduto({ ...novoProduto, nome: e.target.value })} />
-          <TextField label="Tipo" value={novoProduto.tipo} onChange={(e) => setNovoProduto({ ...novoProduto, tipo: e.target.value })} />
-          <TextField label="Quantidade" type="number" value={novoProduto.quantidade} onChange={(e) => setNovoProduto({ ...novoProduto, quantidade: e.target.value })} />
-          <TextField label="Preço (£)" type="number" value={novoProduto.preco} onChange={(e) => setNovoProduto({ ...novoProduto, preco: e.target.value })} />
-          <TextField label="Código de Barras" value={novoProduto.codigo} onChange={(e) => setNovoProduto({ ...novoProduto, codigo: e.target.value })} />
+          <TextField
+            label="Nome"
+            value={novoProduto.nome}
+            onChange={(e) => setNovoProduto({ ...novoProduto, nome: e.target.value })}
+          />
+          <TextField
+            label="Tipo"
+            value={novoProduto.tipo}
+            onChange={(e) => setNovoProduto({ ...novoProduto, tipo: e.target.value })}
+          />
+          <TextField
+            label="Quantidade"
+            type="number"
+            value={novoProduto.quantidade}
+            onChange={(e) => setNovoProduto({ ...novoProduto, quantidade: e.target.value })}
+          />
+          <TextField
+            label="Preço (£)"
+            type="number"
+            value={novoProduto.preco}
+            onChange={(e) => setNovoProduto({ ...novoProduto, preco: e.target.value })}
+          />
+          <TextField
+            id="codigoInput"
+            label="Código de Barras"
+            value={novoProduto.codigo}
+            onChange={(e) => setNovoProduto({ ...novoProduto, codigo: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                adicionarProduto();
+              }
+            }}
+            autoFocus
+          />
           <Button variant="contained" onClick={adicionarProduto}>Adicionar Produto</Button>
         </Stack>
       </Paper>
