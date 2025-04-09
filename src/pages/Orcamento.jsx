@@ -64,7 +64,7 @@ const Orcamento = () => {
 
   const adicionarOrcamento = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE.API_URL}/orcamentos`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/orcamentos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
