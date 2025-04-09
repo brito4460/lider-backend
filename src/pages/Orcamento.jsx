@@ -36,7 +36,7 @@ const Orcamento = () => {
 
   const buscarOrcamentos = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/orcamento`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/orcamentos`);
       const data = await res.json();
       setOrcamentos(data);
     } catch (erro) {
