@@ -30,7 +30,7 @@ const Gastos = () => {
 
   const buscarGastos = async () => {
     try {
-      const res = await fetch('${process.env.REACT_APP_API_URL}/gastos');
+      const res = await fetch(`${import.meta.env.VITE.API_URL}/gastos`);
       const data = await res.json();
       setGastos(data);
     } catch (err) {
@@ -40,7 +40,7 @@ const Gastos = () => {
 
   const salvarGasto = async () => {
     try {
-      const res = await fetch('${process.env.REACT_APP_API_URL}/gastos', {
+      const res = await fetch(`${import.meta.env.VITE.API_URL}/gastos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

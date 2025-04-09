@@ -19,7 +19,7 @@ const Estoque = () => {
 
   const buscarProdutos = async () => {
     try {
-      const resposta = await fetch(`${API_URL}/produtos`);
+      const resposta = await fetch(`${import.meta.env.VITE.API_URL}/produtos`);
       if (!resposta.ok) throw new Error("Erro ao buscar produtos");
       const dados = await resposta.json();
       setProdutos(dados);
@@ -32,7 +32,7 @@ const Estoque = () => {
 
   const adicionarProduto = async () => {
     try {
-      const resposta = await fetch(`${API_URL}/produtos`, {
+      const resposta = await fetch(`${import.meta.env.VITE.API_URL}/produtos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -57,7 +57,7 @@ const Estoque = () => {
   const salvarEdicao = async (id) => {
     const produtoEditado = produtos.find(p => p._id === id);
     try {
-      const resposta = await fetch(`${API_URL}/produtos/${id}`, {
+      const resposta = await fetch(`${import.meta.env.VITE.API_URL}/produtos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(produtoEditado),

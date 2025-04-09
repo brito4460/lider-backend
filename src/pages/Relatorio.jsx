@@ -37,9 +37,9 @@ const Relatorio = () => {
   const buscarDados = async () => {
     try {
       const [resOrc, resGas, resPag] = await Promise.all([
-        fetch('${process.env.REACT_APP_API_URL}orcamentos'),
-        fetch('${process.env.REACT_APP_API_URL}/gastos'),
-        fetch('${process.env.REACT_APP_API_URL}/pagamentos'),
+        fetch(`${import.meta.env.VITE_API_URL}orcamentos`),
+        fetch(`${import.meta.env.VITE_API_URL}/gastos`),
+        fetch(`${import.meta.env.VITE_API_URL}/pagamentos`),
       ]);
       const [dataOrc, dataGas, dataPag] = await Promise.all([
         resOrc.json(),

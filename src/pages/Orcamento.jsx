@@ -36,7 +36,7 @@ const Orcamento = () => {
 
   const buscarOrcamentos = async () => {
     try {
-      const res = await fetch('${process.env.REACT_APP_API_URL}/orcamentos');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/orcamento`);
       const data = await res.json();
       setOrcamentos(data);
     } catch (erro) {
@@ -46,7 +46,7 @@ const Orcamento = () => {
 
   const buscarServicos = async () => {
     try {
-      const res = await fetch('${process.env.REACT_APP_API_URL}/servicos');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/servicos`);
       const data = await res.json();
       setServicos(data);
     } catch (erro) {
@@ -64,7 +64,7 @@ const Orcamento = () => {
 
   const adicionarOrcamento = async () => {
     try {
-      const res = await fetch('${process.env.REACT_APP_API_URL}/orcamentos', {
+      const res = await fetch(`${import.meta.env.VITE.API_URL}/orcamentos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -85,7 +85,7 @@ const Orcamento = () => {
   const deletarOrcamento = async (id) => {
     if (!window.confirm('Deseja realmente excluir este orçamento?')) return;
     try {
-      await fetch(`${process.env.REACT_APP_API_URL}/orcamentos/${id}`, { method: 'DELETE' });
+      await fetch(`${import.meta.env.VITE_API_URL}/orcamentos/${id}`, { method: 'DELETE' });
       setOrcamentos(orcamentos.filter((o) => o._id !== id));
     } catch (erro) {
       console.error('Erro ao deletar orçamento:', erro);

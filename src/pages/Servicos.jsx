@@ -30,13 +30,13 @@ const Servicos = () => {
   const [servicoEditando, setServicoEditando] = useState(null);
 
   const buscar = async () => {
-    const res = await fetch('${process.env.REACT_APP_API_URL}/servicos');
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/servicos`);
     const data = await res.json();
     setServicos(data);
   };
 
   const salvar = async () => {
-    const res = await fetch('${process.env.REACT_APP_API_URL}/servicos', {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/servicos`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...novo, valor: parseFloat(novo.valor) }),
@@ -48,7 +48,7 @@ const Servicos = () => {
 
   const deletar = async (id) => {
     if (!window.confirm('Excluir este serviço?')) return;
-    await fetch(`${process.env.REACT_APP_API_URL}/servicos/${id}`, { method: 'DELETE' });
+    await fetch(`${import.meta.env.VITE_API_URL}/servicos/${id}`, { method: 'DELETE' });
     setServicos(servicos.filter((s) => s._id !== id));
   };
 
@@ -58,7 +58,7 @@ const Servicos = () => {
   };
 
   const salvarEdicao = async () => {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/servicos/${servicoEditando._id}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/servicos/${servicoEditando._id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

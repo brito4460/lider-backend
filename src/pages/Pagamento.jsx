@@ -24,19 +24,19 @@ const Pagamento = () => {
   const [valorManual, setValorManual] = useState('');
 
   const buscarProdutos = async (texto) => {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}//produtos?nome=${texto}`);
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/produtos?nome=${texto}`);
     const data = await res.json();
     setProdutosOpcoes(data);
   };
 
   const buscarServicos = async (texto) => {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/servicos?nome=${texto}`);
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/servicos?nome=${texto}`);
     const data = await res.json();
     setServicosOpcoes(data);
   };
 
   const buscarPagamentos = async () => {
-    const res = await fetch('${process.env.REACT_APP_API_URL}/pagamentos');
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/pagamentos`);
     const data = await res.json();
     setPagamentosSalvos(data.reverse());
   };
@@ -134,7 +134,7 @@ const Pagamento = () => {
         data: new Date(),
       };
 
-      const res = await fetch('${process.env.REACT_APP_API_URL}/pagamentos', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/pagamentos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
