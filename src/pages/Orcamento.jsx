@@ -1,5 +1,4 @@
-// src/pages/Orcamento.jsx
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -121,11 +120,29 @@ const Orcamento = () => {
         <Typography variant="h6">Criar Novo Orçamento</Typography>
 
         <Stack spacing={2} sx={{ mt: 2 }}>
-          <TextField label="Nome do Cliente" value={novoOrcamento.cliente} onChange={(e) => setNovoOrcamento({ ...novoOrcamento, cliente: e.target.value })} />
+          <TextField
+            label="Nome do Cliente"
+            value={novoOrcamento.cliente}
+            onChange={(e) => setNovoOrcamento({ ...novoOrcamento, cliente: e.target.value })}
+          />
 
           <FormControl>
             <InputLabel>Selecionar Serviços</InputLabel>
-            <Select multiple value={servicosSelecionados} onChange={(e) => { const ids = e.target.value; setServicosSelecionados(ids); calcularDescricaoEValor(ids); }} renderValue={(selected) => servicos.filter((s) => selected.includes(s._id)).map((s) => s.nome).join(', ')}>
+            <Select
+              multiple
+              value={servicosSelecionados}
+              onChange={(e) => {
+                const ids = e.target.value;
+                setServicosSelecionados(ids);
+                calcularDescricaoEValor(ids);
+              }}
+              renderValue={(selected) =>
+                servicos
+                  .filter((s) => selected.includes(s._id))
+                  .map((s) => s.nome)
+                  .join(', ')
+              }
+            >
               {servicos.map((s) => (
                 <MenuItem key={s._id} value={s._id}>
                   <Checkbox checked={servicosSelecionados.includes(s._id)} />
@@ -135,18 +152,38 @@ const Orcamento = () => {
             </Select>
           </FormControl>
 
-          <TextField label="Descrição" multiline value={novoOrcamento.descricao} onChange={(e) => setNovoOrcamento({ ...novoOrcamento, descricao: e.target.value })} />
+          <TextField
+            label="Descrição"
+            multiline
+            value={novoOrcamento.descricao}
+            onChange={(e) =>
+              setNovoOrcamento({ ...novoOrcamento, descricao: e.target.value })
+            }
+          />
 
-          <TextField label="Valor Total (£)" type="number" value={valorManual} onChange={(e) => setValorManual(e.target.value)} />
+          <TextField
+            label="Valor Total (£)"
+            type="number"
+            value={valorManual}
+            onChange={(e) => setValorManual(e.target.value)}
+          />
 
-          <Button variant="contained" onClick={adicionarOrcamento}>Salvar Orçamento</Button>
+          <Button variant="contained" onClick={adicionarOrcamento}>
+            Salvar Orçamento
+          </Button>
         </Stack>
       </Paper>
 
       <Paper elevation={3} sx={{ p: 2 }} className="no-print">
         <Typography variant="h6">Orçamentos Salvos</Typography>
 
-        <TextField label="Buscar por cliente ou descrição" value={busca} onChange={(e) => setBusca(e.target.value)} fullWidth sx={{ mt: 2, mb: 2 }} />
+        <TextField
+          label="Buscar por cliente ou descrição"
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          fullWidth
+          sx={{ mt: 2, mb: 2 }}
+        />
 
         <TableContainer>
           <Table>
@@ -165,8 +202,12 @@ const Orcamento = () => {
                   <TableCell>{orc.descricao}</TableCell>
                   <TableCell>£{orc.valor.toFixed(2)}</TableCell>
                   <TableCell align="center">
-                    <IconButton onClick={() => imprimirOrcamento(orc)}><PrintIcon /></IconButton>
-                    <IconButton onClick={() => deletarOrcamento(orc._id)}><DeleteIcon /></IconButton>
+                    <IconButton onClick={() => imprimirOrcamento(orc)}>
+                      <PrintIcon />
+                    </IconButton>
+                    <IconButton onClick={() => deletarOrcamento(orc._id)}>
+                      <DeleteIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
@@ -175,23 +216,65 @@ const Orcamento = () => {
         </TableContainer>
       </Paper>
 
-      {/* Layout de impressão individual */}
       {mostrarPrint && orcamentoSelecionado && (
-        <Box sx={{ p: 4 }} className="print-only">
-          <Typography variant="h4" gutterBottom>Orçamento - Lider Motorcycles</Typography>
-          <Typography variant="subtitle1">Cliente: {orcamentoSelecionado.cliente}</Typography>
-          <Typography variant="body1" sx={{ mt: 2 }}>Descrição: {orcamentoSelecionado.descricao}</Typography>
-          <Typography variant="h6" sx={{ mt: 2 }}>Total:£{orcamentoSelecionado.valor.toFixed(2)}</Typography>
-          <Typography sx={{ mt: 4, fontSize: 12 }}>*Este documento é apenas uma proposta de serviço. Válido por 7 dias.</Typography>
+        <Box
+          sx={{
+            p: 6,
+            position: 'relative',
+            minHeight: '100vh',
+            backgroundImage: "url('/logo-lider.jpeg')",
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundColor: '#fff',
+          }}
+          className="print-only"
+        >
+          <Box sx={{ position: 'relative', zIndex: 1, backgroundColor: 'rgba(255,255,255,0.85)', padding: '2rem', borderRadius: '8px' }}>
+            <Typography variant="h4" gutterBottom>
+              Orçamento - Lider Motorcycles
+            </Typography>
+            <Typography variant="subtitle1">
+              Cliente: {orcamentoSelecionado.cliente}
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 2 }}>
+              Descrição: {orcamentoSelecionado.descricao}
+            </Typography>
+            <Typography variant="h6" sx={{ mt: 2 }}>
+              Total: £{orcamentoSelecionado.valor.toFixed(2)}
+            </Typography>
+            <Typography sx={{ mt: 4, fontSize: 12 }}>
+              *Este documento é apenas uma proposta de serviço. Válido por 7 dias.
+            </Typography>
+          </Box>
         </Box>
       )}
 
       <style>{`
         @media print {
-          .no-print { display: none !important; }
-          .print-only { display: block !important; }
+          body {
+            margin: 0;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+
+          .no-print {
+            display: none !important;
+          }
+
+          .print-only {
+            display: block !important;
+            page-break-inside: avoid;
+            background-color: white !important;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+          }
         }
-        .print-only { display: none; }
+
+        .print-only {
+          display: none;
+        }
       `}</style>
     </Box>
   );

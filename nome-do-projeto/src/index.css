@@ -66,28 +66,3 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
-
-/* ===== AJUSTES PARA IMPRESSÃO ===== */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-
-  .print-only {
-    display: block !important;
-    background-color: white !important;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-  }
-
-  body {
-    margin: 0;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-}
-
-.print-only {
-  display: none;
-}
